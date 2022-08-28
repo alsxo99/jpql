@@ -18,26 +18,38 @@ public class JpaMain {
             member1.setUsername("member1");
             em.persist(member1);
 
-            Member member2 = new Member();
-            member2.setAge(22);
-            member2.setUsername("member2");
-            em.persist(member2);
+            em.createQuery("select m from Member m", Member.class)
+                            .getResultList();
+            em.createQuery("select t from Member m join m.team t")
+                            .getResultList();
+            em.createQuery("select o.address from Order o", Address.class)
+                            .getResultList();
+            List resultList = em.createQuery("select m.username, m.age from Member m")
+                    .getResultList();
 
-            TypedQuery<Member> query1 = em.createQuery("select m from Member m", Member.class);
-            List<Member> result1 = query1.getResultList();
-            for (Member member : result1) {
-                System.out.println(member.getUsername());
-            }
+            List<Object[]> resultList1 = em.createQuery("select m.username, m.age from Member m")
+                    .getResultList();
 
+            List<MemberDTO> resultList2 = em.createQuery("select distinct new jpql.MemberDTO(m.username, m.age) from Member m", MemberDTO.class)
+                    .getResultList();
 
-            Query query2 = em.createQuery("select m.age, m.username from Member m");
-            List result2 = query2.getResultList();
+            Object o = resultList.get(0);
+            Object[] result = (Object[]) o;
 
-            Member singleResult = em.createQuery("select m from Member m where m.username =: username", Member.class)
-                    .setParameter("username", "member1")
-                    .getSingleResult();
-            System.out.println(singleResult.getUsername());
+            MemberDTO memberDTO = resultList2.get(0);
+            System.out.println(memberDTO.getUsername());
+            System.out.println(memberDTO.getAge());
 
+//            Object[] result1 = resultList1.get(0);
+//            System.out.println(result1[0]);
+//            System.out.println(result1[1]);
+
+//            System.out.println(result[0]);
+//            System.out.println(result[1]);
+//
+//            for (Object o1 : result) {
+//                System.out.println(o1);
+//            }
             tx.commit();
         } catch (Exception e) {
             tx.rollback();
