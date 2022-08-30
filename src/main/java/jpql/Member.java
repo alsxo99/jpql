@@ -2,6 +2,8 @@ package jpql;
 
 import javax.persistence.*;
 
+import static javax.persistence.FetchType.*;
+
 @Entity
 public class Member {
 
@@ -13,7 +15,7 @@ public class Member {
 
     private int age;
 
-    @ManyToOne
+    @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "TEAM_ID")
     private Team team;
 
